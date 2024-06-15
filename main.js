@@ -3,8 +3,8 @@ const { Plugin } = require("obsidian");
 class TranslatePlugin extends Plugin {
   async onload() {
     this.addCommand({
-      id: "translate-selected-text",
-      name: "Translate Selected Text",
+      id: "translate-selection-zh",
+      name: "Translate Selection ZH",
       editorCallback: async (editor, view) => {
         const selectedText = editor.getSelection();
         if (!selectedText) {
@@ -12,24 +12,43 @@ class TranslatePlugin extends Plugin {
           return;
         }
 
-        const translatedText = await this.translateText(selectedText);
+        console.log("zhx100: " + selectedText);
+        const translatedText = await this.translateText(selectedText, 'zh', 'en');
         const cursor = editor.getCursor("to");
-        editor.replaceRange(`\n\n> ${translatedText}`, cursor);
+        console.log("zhx101: " + translatedText);
+        editor.replaceRange(`\n\n${translatedText}`, cursor);
+      },
+    });
+    this.addCommand({
+      id: "translate-selection-en",
+      name: "Translate Selection EN",
+      editorCallback: async (editor, view) => {
+        const selectedText = editor.getSelection();
+        if (!selectedText) {
+          new Notice("No text selected.");
+          return;
+        }
+
+        console.log("zhx100: " + selectedText);
+        const translatedText = await this.translateText(selectedText,  'en', 'zh');
+        const cursor = editor.getCursor("to");
+        console.log("zhx101: " + translatedText);
+        editor.replaceRange(`\n\n${translatedText}`, cursor);
       },
     });
   }
 
-  async translateText(text) {
-    const response = await fetch("https://api.example.com/translate", {
+  async translateText(text, from, to) {
+    const response = await fetch("http://localhost:5000/translatesection", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ selectedText: text, from: from, to: to }),
     });
 
     const result = await response.json();
-    return result.translatedText;
+    return result.result;
   }
 }
 
