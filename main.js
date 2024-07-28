@@ -39,7 +39,7 @@ class TranslatePlugin extends Plugin {
   }
 
   async translateText(text, from, to) {
-    const response = await fetch("http://localhost:5000/translatesection", {
+    const response = await fetch("http://localhost:5000/translateselection", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
